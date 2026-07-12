@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Loan Approval System - Secure Chatbot & Dashboard</title>
+    <!-- Icons & Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-size/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <span>CREDITSHIELD AI</span>
+            </div>
+            <nav class="navigation">
+                <button class="nav-tab active" onclick="switchTab('chatbot-tab')">
+                    <i class="fa-solid fa-comments"></i> Loan Chatbot
+                </button>
+                <button class="nav-tab" onclick="switchTab('dashboard-tab'); loadDashboardData();">
+                    <i class="fa-solid fa-chart-line"></i> Officer Dashboard
+                </button>
+            </nav>
+        </header>
+        <!-- Main Body -->
+        <main class="main-content">
+            
+            <!-- Left Side Area: Switchable Tabs -->
+            <div class="workspace-area">
+                
+                <!-- TAB 1: CUSTOMER CHATBOT -->
+                <div id="chatbot-tab" class="tab-content active">
+                    <div class="chatbot-workspace">
+                        
+                        <!-- Chatbot Header -->
+                        <div class="chat-header">
+                            <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bot-status-container">
+                                <span class="bot-name">Secure Loan Advisor</span>
+                                <span class="bot-status">Online</span>
+                            </div>
+                        </div>
+                        <!-- Chat log -->
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Welcome Message -->
+                            <div class="chat-bubble bot">
+                                <div class="bubble-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="bubble-content">
+                                    Welcome to CreditShield AI Loan Advisor. I will guide you through your secure loan application process. We enforce <strong>anti-phishing, fraud detection, and anti-money laundering (AML) controls</strong>.
+                                    <br><br>
+                                    To begin, please authenticate your session by logging in below.
+                                    
+                                    <!-- Login Card Widget -->
+                                    <div class="chat-widget" id="login-widget">
+                                        <div class="widget-title">Customer Authentication</div>
+                                        <div class="form-group">
+                                            <label class="form-label">Registered Email</label>
+                                            <input type="email" id="login-email" class="form-input" placeholder="customer@example.com" value="customer@example.com">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Password</label>
+                                            <input type="password" id="login-password" class="form-input" placeholder="••••••••" value="password123">
+                                        </div>
+                                        <div class="form-group" style="margin-top: 15px;">
+                                            <button class="btn" onclick="submitLogin()"><i class="fa-solid fa-arrow-right-to-bracket"></i> Generate 6-digit OTP</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- User input (Disabled initially, controlled by flow) -->
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input-field" class="form-input" placeholder="Please complete the authentication above..." disabled style="flex: 1;">
+                            <button class="btn" id="chat-send-btn" disabled style="width: auto;"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- TAB 2: LOAN OFFICER DASHBOARD -->
+                <div id="dashboard-tab" class="tab-content">
+                    <div class="dashboard-workspace">
+                        
+                        <!-- List view showing all submissions -->
+                        <div id="dashboard-list-view" class="dashboard-grid">
+                            
+                            <!-- Stat Counters -->
+                            <div class="stats-container">
+                                <div class="stat-card total">
+                                    <div class="stat-info">
+                                        <span class="stat-label">Total Submissions</span>
+                                        <span class="stat-value" id="stat-total">0</span>
+                                    </div>
+                                    <div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div>
+                                </div>
+                                <div class="stat-card approved">
+                                    <div class="stat-info">
+                                        <span class="stat-label">Approved</span>
+                                        <span class="stat-value" id="stat-approved">0</span>
+                                    </div>
+                                    <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+                                </div>
+                                <div class="stat-card review">
+                                    <div class="stat-info">
+                                        <span class="stat-label">Manual Review</span>
+                                        <span class="stat-value" id="stat-review">0</span>
+                                    </div>
+                                    <div class="stat-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                </div>
+                                <div class="stat-card rejected">
+                                    <div class="stat-info">
+                                        <span class="stat-label">Rejected</span>
+                                        <span class="stat-value" id="stat-rejected">0</span>
+                                    </div>
+                                    <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                                </div>
+                            </div>
+                            <!-- List Table -->
+                            <div class="dashboard-table-card">
+                                <div class="table-header">
+                                    <span class="table-title">Loan Applications Queue</span>
+                                    <button class="btn btn-secondary" onclick="loadDashboardData()" style="width: auto;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                                </div>
+                                <div class="app-table-container">
+                                    <table class="app-table">
+                                        <thead>
+                                            <tr>
+                                                <th>App ID</th>
+                                                <th>Applicant Name</th>
+                                                <th>Loan Amount</th>
+                                                <th>Phishing Risk</th>
+                                                <th>Fraud Check</th>
+                                                <th>AML Risk</th>
+                                                <th>Overall Risk</th>
+                                                <th>Decision Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="app-table-body">
+                                            <tr>
+                                                <td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">
+                                                    No applications processed yet. Fill out the chatbot form to seed records.
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Details view showing specific application analyses -->
+                        <div id="dashboard-detail-view" class="dashboard-detail-view" style="display: none;">
+                            
+                            <!-- Back link -->
+                            <div class="back-btn-container">
+                                <a class="back-link" onclick="closeAppDetails()"><i class="fa-solid fa-arrow-left"></i> Back to Queue</a>
+                            </div>
+                            <!-- Main Left column of details -->
+                            <div class="detail-main-panel">
+                                
+                                <!-- Core Personal and loan details -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <span>Applicant Profile Information</span>
+                                        <span class="badge review" id="detail-decision-badge">PENDING REVIEW</span>
+                                    </div>
+                                    <div class="detail-grid">
+                                        <div class="detail-item">
+                                            <span class="detail-label">Application ID</span>
+                                            <span class="detail-value" id="detail-app-id">#123</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Submission Date</span>
+                                            <span class="detail-value" id="detail-app-date">-</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Applicant Name</span>
+                                            <span class="detail-value" id="detail-full-name">-</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Email Address</span>
+                                            <span class="detail-value" id="detail-email">-</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Aadhaar Card No</span>
+                                            <span class="detail-value" id="detail-aadhaar">-</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">PAN Card No</span>
+                                            <span class="detail-value" id="detail-pan">-</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Loan Details</span>
+                                            <span class="detail-value" id="detail-loan-details">INR 0.00 / 0 months</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Employment Status</span>
+                                            <span class="detail-value" id="detail-employment">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Side-by-side OCR Verification checks -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <span>Identity Verification (Form vs EasyOCR Extraction)</span>
+                                        <span class="badge approved" id="detail-ocr-overall-status">VERIFIED</span>
+                                    </div>
+                                    
+                                    <div class="verification-compare-row">
+                                        <div class="compare-block" id="compare-name-card">
+                                            <span class="compare-title">Name Match</span>
+                                            <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                                                <div>Form: <strong id="cmp-form-name">-</strong></div>
+                                                <div>OCR: <strong id="cmp-ocr-name">-</strong></div>
+                                            </div>
+                                        </div>
+                                        <div class="compare-block" id="compare-dob-card">
+                                            <span class="compare-title">DOB Match</span>
+                                            <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                                                <div>Form: <strong id="cmp-form-dob">-</strong></div>
+                                                <div>OCR: <strong id="cmp-ocr-dob">-</strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="verification-compare-row">
+                                        <div class="compare-block" id="compare-aadhaar-card">
+                                            <span class="compare-title">Aadhaar ID Match</span>
+                                            <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                                                <div>Form: <strong id="cmp-form-aadhaar">-</strong></div>
+                                                <div>OCR: <strong id="cmp-ocr-aadhaar">-</strong></div>
+                                            </div>
+                                        </div>
+                                        <div class="compare-block" id="compare-pan-card">
+                                            <span class="compare-title">PAN ID Match</span>
+                                            <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                                                <div>Form: <strong id="cmp-form-pan">-</strong></div>
+                                                <div>OCR: <strong id="cmp-ocr-pan">-</strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- NER and PII Anonymization view -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <span>PII Masking & Named Entity Recognition (NER)</span>
+                                    </div>
+                                    <div class="masked-text-box" id="detail-masked-text">
+                                        Masked data...
+                                    </div>
+                                    <div class="pii-list" id="detail-pii-list">
+                                        <!-- pii labels go here -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Right column of details (Risk evaluations) -->
+                            <div class="detail-side-panel">
+                                
+                                <!-- Risk Score -->
+                                <div class="info-card" style="text-align: center;">
+                                    <div class="info-card-header" style="justify-content: center;">
+                                        <span>Overall Risk Score</span>
+                                    </div>
+                                    <div class="risk-score-wrapper">
+                                        <div class="risk-score-dial" id="detail-risk-dial">
+                                            <div class="risk-score-value" id="detail-risk-pct">0%</div>
+                                        </div>
+                                        <div class="risk-score-desc" id="detail-risk-desc">Low Risk</div>
+                                    </div>
+                                </div>
+                                <!-- Threat details breakdown -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <span>XGBoost Security Analysis</span>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:12px;">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span style="font-size:12px; color:var(--text-secondary);"><i class="fa-solid fa-fish" style="margin-right:6px;"></i> Phishing Detection:</span>
+                                            <span class="badge" id="risk-breakdown-phishing">-</span>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span style="font-size:12px; color:var(--text-secondary);"><i class="fa-solid fa-user-ninja" style="margin-right:6px;"></i> Fraud Detection:</span>
+                                            <span class="badge" id="risk-breakdown-fraud">-</span>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span style="font-size:12px; color:var(--text-secondary);"><i class="fa-solid fa-money-bill-transfer" style="margin-right:6px;"></i> AML Evaluation:</span>
+                                            <span class="badge" id="risk-breakdown-aml">-</span>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:10px; margin-top:5px;">
+                                            <span style="font-size:12px; color:var(--text-secondary);"><i class="fa-solid fa-graduation-cap" style="margin-right:6px;"></i> Loan Eligibility:</span>
+                                            <span class="badge" id="risk-breakdown-eligibility">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- SHAP Visualizations -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <span>Explainable AI (SHAP Plot)</span>
+                                    </div>
+                                    <div class="shap-chart-container" id="detail-shap-chart">
+                                        <!-- Base64 SHAP image displays here -->
+                                        <span style="font-size:11px; color:var(--text-secondary);">Loading SHAP factors...</span>
+                                    </div>
+                                </div>
+                                <!-- Final decision action box -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <span>Update Final Decision</span>
+                                    </div>
+                                    <div class="decision-action-box">
+                                        <div style="display:flex; gap:8px;">
+                                            <button class="btn" style="background:var(--gradient-success);" onclick="updateAppDecision('APPROVED')"><i class="fa-solid fa-circle-check"></i> Approve</button>
+                                            <button class="btn" style="background:var(--gradient-danger);" onclick="updateAppDecision('REJECTED')"><i class="fa-solid fa-circle-xmark"></i> Reject</button>
+                                        </div>
+                                        <button class="btn btn-secondary" onclick="updateAppDecision('MANUAL REVIEW')"><i class="fa-solid fa-clock-rotate-left"></i> Hold for Review</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Sidebar: Mock Email Client -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <i class="fa-solid fa-envelope-open-text mailbox-icon"></i>
+                    <span>Applicant Email Inbox</span>
+                </div>
+                <div class="mail-list" id="mail-list">
+                    <!-- Dynamic mock emails will arrive here -->
+                    <div class="mail-card unread" id="initial-welcome-mail">
+                        <div class="mail-sender">sender: secure@creditshield.com</div>
+                        <div class="mail-subject">Welcome to CreditShield AI Security Console</div>
+                        <div class="mail-body">
+                            Welcome! This email panel will catch any incoming notifications like OTPs, security logs, or loan results to help you verify and test the chatbot pipeline.
+                        </div>
+                        <div class="mail-time">Just Now</div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+    <!-- Script File -->
+    <script src="app.js"></script>
+</body>
+</html>
