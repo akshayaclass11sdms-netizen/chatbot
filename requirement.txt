@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+python-multipart
+pandas
+numpy
+scikit-learn
+xgboost
+shap
+easyocr
+spacy
+presidio-analyzer
+matplotlib
+python-dotenv
